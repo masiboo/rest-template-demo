@@ -9,7 +9,9 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.client.RestClientException;
 import org.springframework.web.client.RestTemplate;
 
+import java.util.Arrays;
 import java.util.Collections;
+import java.util.Optional;
 
 @RestController
 public class RestTemplateDemoController {
@@ -17,6 +19,7 @@ public class RestTemplateDemoController {
     public static final String url = "https://scoreboard-backend-dev.herokuapp.com/scoreBoard";
     public static final String POST_REQUEST = "/add/score";
     public static final String GET_ALL_REQUEST = "/all/score";
+    public static final String GET_BY_ID_REQUEST = "/score/";
     public static final String PUT_REQUEST = "/update/score";
     public static final String DELETE_REQUEST = "/delete/score/";
 
@@ -28,9 +31,28 @@ public class RestTemplateDemoController {
         return builder.build();
     }
 
+    @GetMapping(path = GET_BY_ID_REQUEST + "{id}")
+    public ScoreBoard getById(@PathVariable(required = true) long id) {
+        HttpHeaders headers = new HttpHeaders();
+        headers.setAccept(Collections.singletonList(MediaType.APPLICATION_JSON));
+        HttpEntity<String> entity = new HttpEntity<>("parameters", headers);
+
+        ResponseEntity<ScoreBoard> response = restTemplate.exchange(url + GET_BY_ID_REQUEST+id,
+                HttpMethod.GET, entity, ScoreBoard.class);
+
+        return response.getBody();
+    }
+
     @GetMapping(GET_ALL_REQUEST)
     public String getScore() {
-        ResponseEntity<String> response = restTemplate.getForEntity(url + GET_ALL_REQUEST, String.class);
+
+        HttpHeaders headers = new HttpHeaders();
+        headers.setAccept(Collections.singletonList(MediaType.APPLICATION_JSON));
+        HttpEntity<String> entity = new HttpEntity<>("parameters", headers);
+
+        ResponseEntity<String> response = restTemplate.exchange(url + GET_ALL_REQUEST,
+                HttpMethod.GET, entity, String.class);
+
         return response.getBody();
     }
 

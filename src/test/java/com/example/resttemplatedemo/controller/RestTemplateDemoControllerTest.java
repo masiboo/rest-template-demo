@@ -39,10 +39,14 @@ class RestTemplateDemoControllerTest {
         String expected = "All score here";
         ResponseEntity<String> mocResponse = new ResponseEntity<>(expected, HttpStatus.OK);
 
+        HttpHeaders headers = new HttpHeaders();
+        headers.setAccept(Collections.singletonList(MediaType.APPLICATION_JSON));
+        HttpEntity<String> entity = new HttpEntity<>("parameters", headers);
+
         // Act
-        when(restTemplate.getForEntity(RestTemplateDemoController.url
+        when(restTemplate.exchange(RestTemplateDemoController.url
                         + RestTemplateDemoController.GET_ALL_REQUEST,
-                String.class))
+                HttpMethod.GET, entity, String.class))
                 .thenReturn(mocResponse);
         String actual = restTemplateDemoController.getScore();
 
@@ -125,5 +129,30 @@ class RestTemplateDemoControllerTest {
 
         assertNotNull(actualResponseEntity);
         assertSame(expectedResponseEntity, actualResponseEntity);
+    }
+
+    @Test
+    void getById() {
+        // Arrange
+        long id = 1L;
+        HttpHeaders headers = new HttpHeaders();
+        headers.setAccept(Collections.singletonList(MediaType.APPLICATION_JSON));
+        HttpEntity<String> entity = new HttpEntity<>("parameters", headers);
+        ScoreBoard expectedScoreBoard = new ScoreBoard();
+        expectedScoreBoard.setId(0);
+        expectedScoreBoard.setPoint(10);
+        expectedScoreBoard.setTeam("team");
+        ResponseEntity<ScoreBoard> expectedEntity = new ResponseEntity<>(expectedScoreBoard, HttpStatus.OK);
+
+        // act
+        when(restTemplate.exchange(restTemplateDemoController.url +
+                        restTemplateDemoController.GET_BY_ID_REQUEST + id,
+                HttpMethod.GET, entity, ScoreBoard.class)).thenReturn(expectedEntity);
+
+        ScoreBoard actualScoreBoard = restTemplateDemoController.getById(id);
+
+        // assert
+        assertNotNull(actualScoreBoard);
+        assertSame(expectedScoreBoard, actualScoreBoard);
     }
 }
