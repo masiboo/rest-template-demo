@@ -132,6 +132,23 @@ class RestTemplateDemoControllerTest {
     }
 
     @Test
+    void deleteScoreNotFound() {
+
+        // Arrange
+        long id = 0;
+        ResponseEntity<String> expectedResponseEntity = new ResponseEntity<>("Score deleted successfully",
+                HttpStatus.OK);
+        HttpHeaders headers = new HttpHeaders();
+        headers.setAccept(Collections.singletonList(MediaType.APPLICATION_JSON));
+        HttpEntity<ScoreBoard> entity = new HttpEntity<>(headers);
+
+        // act
+        ResponseEntity<?> actualResponseEntity = restTemplateDemoController.deleteScore(id);
+
+        assertNull(actualResponseEntity);
+    }
+
+    @Test
     void getById() {
         // Arrange
         long id = 1L;
